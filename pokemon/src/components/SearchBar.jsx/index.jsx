@@ -1,11 +1,37 @@
-function SearchBar({ searchTerm, setSearchTerm }) {
+import { useSelector, useDispatch } from "react-redux";
+import { getPokemonData } from "../../app/reducer/getPokemonData";
+import debounce from "../../../utils/debounce";
+import { useCallback } from "react";
+
+function SearchBar() {
+  const { allPokemon } = useSelector((state) => state.pokemon);
+  const dispatch = useDispatch();
+
+  const searchPokemon = useCallback((value) => {
+    if (value.length) {
+      const pokemons = allPokemon.filter((pokemon) => 
+        pokemon.name.toLowerCase().includes(value.toLowerCase())
+      ).slice(0, 18);
+      dispatch(getPokemonData(pokemons));
+    } else {
+      // Clone and sort Pokémon randomly, ensuring not to mutate the original array
+      const clonedPokemons = [...allPokemon];
+      const randomPokemons = clonedPokemons
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 18);
+      dispatch(getPokemonData(randomPokemons));
+    }
+  },[allPokemon, dispatch]);
+
+  // Debounce the search to avoid excessive re-renders
+  const handleSearch = debounce((value) => searchPokemon(value), 500);
+
   return (
     <input
       type="text"
       placeholder="Search Pokémon"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="mb-6 w-64 rounded-lg border-2 border-gray-300 p-2"
+      onChange={(e) => handleSearch(e.target.value)}
+      className="bg-gray-100/20 px-4 py-2 outline-none w-[280px] text-white rounded-md border-2 transition-colors duration-100 border-transparent focus:border-[#596A95]"
     />
   );
 }
