@@ -26,15 +26,12 @@ useEffect(()=>{
 
 
 
+if(loading){
+  return <Loader/>
+}
 
+  return <PokemonList pokemonData={randomPokemon} />
 
-  return (
-    <>
-      <PokemonList pokemonData={randomPokemon} />
-      <div className="h-6"></div>
-      {loading && <Loader />}
-    </>
-  );
 }
 
 export default Home;

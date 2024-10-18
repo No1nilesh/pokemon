@@ -6,11 +6,13 @@ import { useSelector } from "react-redux";
 import Description from "./Pokemon/Description.jsx";
 import Evolution from "./Pokemon/Evolution.jsx";
 import Moves from "./Pokemon/Moves.jsx";
+import Loader from "../components/Loader.jsx/index.jsx";
+import IsMobile from "../../hooks/IsMobile.jsx"
 
 function Pokemon() {
   const { id } = useParams();
-
-  const [currentPokemon, setCurrentPokemon] = useState(null);
+  const isMobile = IsMobile();
+    const [currentPokemon, setCurrentPokemon] = useState(null);
   const [evolution, setEvolution] = useState([]);
   const [description, setDescription] = useState({
     strength: [],
@@ -25,6 +27,7 @@ function Pokemon() {
   const fetchPokemonData = useCallback(async () => {
     try {
       const { data } = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
+      console.log(data)
       setCurrentPokemon({
         id: data.id,
         name: data.name,
@@ -35,6 +38,8 @@ function Pokemon() {
           name: stat.stat.name,
         })),
         species_url: data.species.url,
+        abilities : data.abilities.map((ability)=> ability.ability.name),
+        moves : data.moves.map((move)=> move.move.name)
       });
     } catch (error) {
       console.error("Error fetching Pokémon data:", error);
@@ -75,12 +80,12 @@ function Pokemon() {
 
   useEffect(() => {
     setLoading(true);
-    fetchPokemonData().finally(() => setLoading(false));
+    fetchPokemonData()
   }, [fetchPokemonData]);
 
   useEffect(() => {
     if (currentPokemon?.species_url) {
-      fetchEvolutionData(currentPokemon.species_url);
+      fetchEvolutionData(currentPokemon.species_url).finally(setLoading(false))
     }
   }, [currentPokemon, fetchEvolutionData]);
 
@@ -106,26 +111,36 @@ function Pokemon() {
 
 
   if (loading) {
-    return <div>Loading...</div>; // Loading indicator
+    return <Loader/>; // Loading indicator
   }
 
-  return (
-    currentPokemon && evolution.length > 0 && (
-      <div className="h-[calc(100vh_-_80px)] mt-2 w-[95%] card-clip mx-auto p-[2px] bg-card-border">
-        <div className="h-full w-full bg-primary card-clip flex justify-evenly items-center">
-
-    
-
-          {currentTab === 'description' && <Description description={description} evolution={evolution} currentPokemon={currentPokemon}/>}
-          {currentTab === 'evolution' && <Evolution/>}
-          {currentTab === 'moves' && <Moves/>}
-
-          <Tabs/>
-
-        </div>
+  const handleTabs = () => {
+    switch (currentTab) {
+      case 'evolution':
+        return <Evolution evolution={evolution} />;
+      case 'moves':
+        return <Moves currentPokemon={currentPokemon}/>;
+      default:
+        return <Description description={description} evolution={evolution} currentPokemon={currentPokemon} />;
+    }
+  }
+  
+  if(isMobile){
+   return currentPokemon && evolution.length > 0  ? <div className="flex flex-col">
+    {handleTabs()}
+    <div className="w-full fixed bottom-0"><Tabs/></div>
+   </div> : <Loader/>
+  }
+   
+  return currentPokemon && evolution.length > 0  ?
+    <div className="md:h-[calc(100vh_-_80px)] mt-2 w-[95%] card-clip mx-auto p-[2px] bg-card-border">
+      <div className="h-full w-full bg-primary card-clip flex justify-evenly items-center">
+      { handleTabs()}
+        <Tabs/>
       </div>
-    )
-  );
+    </div> : <Loader/>
+    
+  
 }
 
 export default Pokemon;
