@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* 
+.glass {
+  background: hsla(219, 32%, 16%, 1);
+} */
+
+  body{
+    background-color:#050a1a;
+  }
+
+  .header{
+    background: linear-gradient(-45deg, #ffae00, #7e03aa, #00fffb);
+  }
+
+  .clip{
+    clip-path: polygon(2% 0, 100% 0, 100% 75%, 98% 100%, 0 100%, 0 25%);
+  }
+
+  .card-clip{
+    clip-path: polygon(30% 0%, 5.0% 0%, 0% 10%, 0% 90%, 5.0% 100%, 95% 100%, 100% 90%, 100% 10%, 95% 0%, 70% 0%, 65% 10%, 35% 10%);
+  }
