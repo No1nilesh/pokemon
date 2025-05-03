@@ -2,9 +2,9 @@
 
 function Moves({ currentPokemon }) {
   return (
-    <div className="w-full px-4 h-full overflow-y-auto">
+    <div className="w-full px-4">
 
-      <h1 className="uppercase mt-20 text-3xl text-card font-semibold">abilities</h1>
+      <h1 className="uppercase text-3xl text-card font-semibold">abilities</h1>
 
       <div className="flex gap-2 w-full flex-wrap justify-center mt-2">
         {

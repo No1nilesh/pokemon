@@ -1,15 +1,11 @@
 /* eslint-disable react/prop-types */
+import { findEvolution } from "../../../utils/findEvolution";
+import AudioPlayer from "../../components/AudioPlayer.jsx";
 function Description({ description, evolution, currentPokemon }) {
 
-  const findEvolution = (evolution, name) => {
-    for (const form of evolution) {
-      const index = form.indexOf(name);
-      if (index >= 0) return index + 1;
-    }
-  };
-
+  console.log(description, evolution, currentPokemon)
   return (
-    <>
+    <div className="flex flex-col md:flex-row justify-center items-center size-full mb-16 md:mb-0 ">
       {/* Left Section */}
       <div className="flex-1 h-full flex flex-col justify-around items-center">
         <div className="mt-10 rounded-sm bg-primary-card/60 h-fit w-80 px-4 py-4 text-left relative before:content[''] before:rounded-tl-sm before:h-1 before:w-40 before:bg-card-border before:absolute before:top-0 before:left-0">
@@ -43,8 +39,10 @@ function Description({ description, evolution, currentPokemon }) {
       </div>
 
       {/* Image Section */}
-      <div className="image-container flex-1 w-full md:w-[50%]">
+      <div className="image-container flex-1 w-full md:w-[50%] flex flex-col items-center mb-4 md:mb-0">
         <img src={currentPokemon.image} alt={`${currentPokemon.name} sprite`} className="w-full h-auto object-contain" />
+
+        <AudioPlayer sound={currentPokemon.sound}/>
       </div>
 
 
@@ -61,7 +59,7 @@ function Description({ description, evolution, currentPokemon }) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

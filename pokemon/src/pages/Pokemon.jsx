@@ -7,7 +7,7 @@ import Description from "./Pokemon/Description.jsx";
 import Evolution from "./Pokemon/Evolution.jsx";
 import Moves from "./Pokemon/Moves.jsx";
 import Loader from "../components/Loader.jsx/index.jsx";
-import IsMobile from "../../hooks/IsMobile.jsx"
+import IsMobile from "../hooks/IsMobile.jsx"
 
 function Pokemon() {
   const { id } = useParams();
@@ -27,12 +27,13 @@ function Pokemon() {
   const fetchPokemonData = useCallback(async () => {
     try {
       const { data } = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
-      console.log(data)
+      console.log("data", data)
       setCurrentPokemon({
         id: data.id,
         name: data.name,
         image: data.sprites.other.home.front_shiny,
         types: data.types.map((type) => type.type.name),
+        sound : data.cries.latest,
         stats: data.stats.map((stat) => ({
           base_stat: stat.base_stat,
           name: stat.stat.name,
@@ -134,9 +135,13 @@ function Pokemon() {
    
   return currentPokemon && evolution.length > 0  ?
     <div className="md:h-[calc(100vh_-_80px)] mt-2 w-[95%] card-clip mx-auto p-[2px] bg-card-border">
-      <div className="h-full w-full bg-primary card-clip flex justify-evenly items-center">
+      <div className="bg-primary card-clip size-full flex flex-col justify-evenly items-center">
+      <div className="size-full mt-[6.25rem] overflow-y-auto">
       { handleTabs()}
+      </div>
+      <div className="justify-end w-full">
         <Tabs/>
+      </div>
       </div>
     </div> : <Loader/>
     

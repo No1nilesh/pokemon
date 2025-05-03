@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import SearchBar from "../SearchBar.jsx";
 import { Menu, X } from "lucide-react";
-import IsMobile from "../../../hooks/isMobile.jsx";
+import IsMobile from "../../hooks/IsMobile.jsx";
 import PokeBall from "../../assets/pokeball.svg";
 import { useLocation } from "react-router-dom";
 
@@ -11,7 +11,7 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const location = useLocation()
-  const isHomePage = location.pathname === '/'; // Check if the user is on the home page
+  const isHomePage = location.pathname === '/'; // Check if the user is on the home page  
 
   const handleClick = () => {
     setIsMenuOpen((prev) => !prev);
@@ -22,8 +22,8 @@ function Header() {
   };
 
   return (
-    <div className="header p-[1px] sticky top-0 z-50 rounded-md clip">
-      <header className="flex gap-2 flex-col bg-primary rounded-md clip">
+    <div className="header p-[1px] sticky top-0 z-50 rounded-md ">
+      <header className="flex gap-2 flex-col bg-primary rounded-md ">
         <nav className="flex justify-center items-center z-50 relative">
           <img
             src={PokeBall}
@@ -42,17 +42,10 @@ function Header() {
           )}
 
           {/* Mobile menu toggle */}
-          {!isMenuOpen ? (
-            <Menu
-              onClick={handleClick}
-              className="text-white size-10 absolute right-2 cursor-pointer md:hidden"
-            />
-          ) : (
-            <X
-              onClick={handleClick}
-              className="text-white size-10 absolute right-2 cursor-pointer md:hidden"
-            />
-          )}
+          
+          {isHomePage && <div onClick={handleClick} className="text-white absolute right-4 cursor-pointer md:hidden">
+            {!isMenuOpen ? <Menu/> : <X/>}  
+            </div>}
         </nav>
 
         {/* Mobile SearchBar only on homepage */}

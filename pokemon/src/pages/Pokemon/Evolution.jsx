@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { getPokemonData } from "../../app/reducer/getPokemonData";
 import Loader from "../../components/Loader.jsx";
 import { getInitialPokemonData } from "../../app/reducer/getInitialPokemonData.js";
+import { findEvolution } from "../../../utils/findEvolution.js";
 
 function Evolution({ evolution }) {
   const { allPokemon, randomPokemon, loading } = useSelector((state) => state.pokemon);
@@ -17,16 +18,19 @@ function Evolution({ evolution }) {
   useEffect(() => {
     if (Array.isArray(allPokemon) && allPokemon.length > 0) {
       const clonePokemons = [...allPokemon];
-      const evolutionChain = clonePokemons.filter((pokemon) => evolution[0].includes(pokemon.name.toLowerCase()));
+      const evolutionNames = [...new Set(evolution.flat())]
+      const evolutionChain = clonePokemons.filter((pokemon) => evolutionNames.includes(pokemon.name.toLowerCase()));
       console.log("Filtered Evolution Chain:", evolutionChain);
       dispatch(getPokemonData(evolutionChain));
     }
   }, [allPokemon, evolution, dispatch]);
 
 
+
   if (loading) {
     return <Loader />
   }
+  console.log(randomPokemon)
 
   return (
     <div className="flex flex-col justify-center items-center h-full w-full">
@@ -47,6 +51,10 @@ function Evolution({ evolution }) {
                   <div className="text-card uppercase text-xl font-semibold ">
                     <span>{pokemon.name}</span>
                   </div>
+                    <span className="text-xs absolute right-1 bottom-1 space-x-1">
+                    <span className="text-red-500">Evolution</span>
+                    <span className="text-card">{findEvolution(evolution, pokemon.name)}</span>
+                    </span>
                 </div>
                 <img src={pokemon.image} alt={pokemon.name} className=" w-72 aspect-square" />
               </div>

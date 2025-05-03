@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import AudioPlayer from "../AudioPlayer.jsx";
-import PokeBall from "../../assets/ball.svg"; 
+import PokeBall from "../../assets/ball.svg";
 import { Link } from "react-router-dom";
 // eslint-disable-next-line react/prop-types
 function PokemonCard({ pokemon }) {
@@ -31,31 +31,31 @@ function PokemonCard({ pokemon }) {
   }
 
   return (
-<Link to={`/pokemon/${pokemon.id}`}>
-<div className="card-clip p-[2px] cursor-pointer bg-card-border">
-      <div className="relative p-1 bg-primary-card ">
-      <img
-        src={pokemon.image ? pokemon.image : PokeBall}
-        alt={pokemon.name}
-        className="h-40 aspect-square m-auto "
-      />
-      <span className="text-xl font-bold capitalize text-card text-pretty opacity-80">
-        {pokemon.name}
-      </span>
-      {/* <AudioPlayer sound={pokemon.sound}/> */}
+    <Link to={`/pokemon/${pokemon.id}`}>
+      <div className="card-clip p-[2px] cursor-pointer bg-card-border">
+        <div className="relative p-1 bg-primary-card ">
+          <img
+            src={pokemon.image ? pokemon.image : PokeBall}
+            alt={pokemon.name}
+            className="h-40 aspect-square m-auto "
+          />
+          <span className="text-xl font-bold capitalize text-card text-pretty opacity-80">
+            {pokemon.name}
+          </span>
+          {/* <AudioPlayer sound={pokemon.sound}/> */}
 
-    <div className="absolute right-2 top-2">
-    {
-        pokemon.types.length > 0 && pokemon.types.map((type, index) => {
-          return <span key={index} className={`${colorOnType(type)}  bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded float-right`}>{
-            type
-          }</span>
-        })
-      }
-    </div>
-    </div>
-  </div>
-</Link>
+          <div className="absolute right-2 top-2">
+            {
+              pokemon.types.length > 0 && pokemon.types.map((type, index) => {
+                return <span key={index} className={`${colorOnType(type)}  bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded float-right`}>{
+                  type
+                }</span>
+              })
+            }
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
 
