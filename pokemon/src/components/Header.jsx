@@ -1,13 +1,14 @@
-/* eslint-disable react/prop-types */
 import { useState, useRef } from "react";
-import SearchBar from "../SearchBar.jsx";
-import { Menu, X } from "lucide-react";
-import IsMobile from "../../hooks/IsMobile.jsx";
-import PokeBall from "../../assets/pokeball.svg";
-import { useLocation } from "react-router-dom";
-
+import SearchBar from "./SearchBar.jsx";
+import { ChevronLeft, Menu, X } from "lucide-react";
+import IsMobile from "../hooks/IsMobile.jsx";
+import PokeBall from "../assets/pokeball.svg";
+import { useLocation, useNavigate } from "react-router-dom";
+import { resetCurrentPokemon, resetEvolution } from "../app/slice/pokemonSlice.js";
+import { useDispatch } from "react-redux";
 function Header() {
   const isMobile = IsMobile();
+  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const location = useLocation()
@@ -20,6 +21,13 @@ function Header() {
       menuRef.current.style.maxHeight = height;
     }
   };
+
+  const dispatch = useDispatch()
+  const hBack = () => {
+    navigate(-1)
+    dispatch(resetCurrentPokemon())
+    dispatch(resetEvolution())
+  }
 
   return (
     <div className="header p-[1px] sticky top-0 z-50 rounded-md ">
@@ -42,25 +50,30 @@ function Header() {
           )}
 
           {/* Mobile menu toggle */}
-          
+
           {isHomePage && <div onClick={handleClick} className="text-white absolute right-4 cursor-pointer md:hidden">
-            {!isMenuOpen ? <Menu/> : <X/>}  
-            </div>}
+            {!isMenuOpen ? <Menu /> : <X />}
+          </div>}
+          {!isHomePage && <button
+            onClick={hBack}
+            className="bg-primary-card rounded-sm drop-shadow-md text-card flex pr-4 py-1 absolute right-5 cursor-pointer">
+            <ChevronLeft size={24} /> Back
+          </button>}
         </nav>
 
         {/* Mobile SearchBar only on homepage */}
         {isMobile && isHomePage && (
           <ul
             ref={menuRef}
-            className={`overflow-hidden bg-inherit text-white transition-all duration-300 ease-in-out z-40 ${
-              isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-            }`}
+            className={`overflow-hidden bg-inherit text-white transition-all duration-300 ease-in-out z-40 ${isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+              }`}
           >
             <li className="bg-inherit w-full py-2">
               <SearchBar />
             </li>
           </ul>
         )}
+
       </header>
     </div>
   );

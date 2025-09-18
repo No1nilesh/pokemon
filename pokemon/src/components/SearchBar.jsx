@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
-import { getPokemonData } from "../../app/reducer/getPokemonData";
-import debounce from "../../../utils/debounce";
+import { getPokemonDataList } from "../app/reducer/getPokemonData";
+import debounce from "../../utils/debounce";
 import { useCallback } from "react";
 
 function SearchBar() {
@@ -9,19 +9,19 @@ function SearchBar() {
 
   const searchPokemon = useCallback((value) => {
     if (value.length) {
-      const pokemons = allPokemon.filter((pokemon) => 
+      const pokemons = allPokemon.filter((pokemon) =>
         pokemon.name.toLowerCase().includes(value.toLowerCase())
       ).slice(0, 18);
-      dispatch(getPokemonData(pokemons));
+      dispatch(getPokemonDataList({ urls: pokemons }));
     } else {
       // Clone and sort Pokémon randomly, ensuring not to mutate the original array
       const clonedPokemons = [...allPokemon];
       const randomPokemons = clonedPokemons
         .sort(() => Math.random() - 0.5)
         .slice(0, 18);
-      dispatch(getPokemonData(randomPokemons));
+      dispatch(getPokemonDataList({ urls: randomPokemons }));
     }
-  },[allPokemon, dispatch]);
+  }, [allPokemon, dispatch]);
 
   // Debounce the search to avoid excessive re-renders
   const handleSearch = debounce((value) => searchPokemon(value), 500);
