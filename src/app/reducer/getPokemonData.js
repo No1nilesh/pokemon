@@ -13,6 +13,8 @@ export const getPokemonDataList = createAsyncThunk(
                     image: data.sprites.other.home.front_shiny,
                     sound: data.cries.latest,
                     types: data.types.map((type) => type.type.name),
+                    height: data.height,
+                    weight: data.weight,
                     stats: data.stats.map((stat) => ({
                         base_stat: stat.base_stat,
                         name: stat.stat.name,
@@ -40,6 +42,8 @@ export const getPokemonData = createAsyncThunk(
                 name: data.name,
                 image: data.sprites.other.home.front_shiny,
                 types: data.types.map((type) => type.type.name),
+                height: data.height,
+                weight: data.weight,
                 sound: data.cries.latest,
                 stats: data.stats.map((stat) => ({
                     base_stat: stat.base_stat,
@@ -57,16 +61,20 @@ export const getPokemonData = createAsyncThunk(
 
 export const getEvolutionData = createAsyncThunk(
     "pokemon/currentEvolution",
-    async (url, { dispatch }) => {
+    async ({ url, updateList = false }, { dispatch }) => {
         try {
             const { data } = await axios.get(url);
             const evolution = await axios.get(data?.evolution_chain?.url)
             const chain = getEvolutionOrder(evolution?.data?.chain)
             const evolutionNames = [...new Set(chain.flat())];
 
-            const urls = evolutionNames.map((name) => ({ url: `https://pokeapi.co/api/v2/pokemon/${name}` }));
-            dispatch(getPokemonDataList({ urls, context: 'evolution' }));
-            return chain
+            console.log({ updateList })
+
+            if (updateList) {
+                const urls = evolutionNames.map((name) => ({ url: `https://pokeapi.co/api/v2/pokemon/${name}` }));
+                dispatch(getPokemonDataList({ urls, context: 'evolution' }));
+            }
+            return { data: chain, updateList }
         } catch (error) {
             console.error(error)
         }

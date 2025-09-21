@@ -7,33 +7,56 @@ import IsMobile from "../../hooks/IsMobile.jsx"
 import { useDispatch, useSelector } from "react-redux";
 import { getPokemonData } from "../../app/reducer/getPokemonData.js";
 import { PokemonType } from "../../components/TypeIcons.jsx";
+import { CustomDrawer } from "../../components/CustomDrawer.jsx";
+import ImageBox from "./components/image-box.jsx";
+import { DescriptionIcon, EvolutionIcon, MovesIcon } from "../../assets/Icons.jsx";
+import StatsTab from "./tabs/StatsTab.jsx";
+import { Skeleton } from "../../components/ui/skeleton.jsx";
 
 function Pokemon() {
-  const { currentPokemon } = useSelector(state => state.pokemon)
   const { id, tab } = useParams();
-  const [currentTab, setTab] = useState(0)
   const isMobile = IsMobile();
+  const [currentTab, setTab] = useState(0)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const { currentPokemon, loading } = useSelector(state => state.pokemon)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const tabs = useMemo(() => {
-    return [
+    const tabsData = [
       {
         name: 'Description',
         component: <Description />,
-        url: 'description'
+        url: 'description',
+        icon: <DescriptionIcon />
       },
       {
         name: 'Evolution',
-        component: <Evolution />,
-        url: 'evolution'
-      },
-      {
+        component: <Evolution handleDrawer={setDrawerOpen} />,
+        url: 'evolution',
+        icon: <EvolutionIcon />
+      }
+    ]
+
+    if (isMobile) {
+      tabsData.push({
+        name: 'Stats',
+        component: <StatsTab />,
+        url: 'stats',
+        icon: <MovesIcon />
+      })
+    }
+
+    if (!isMobile) {
+      tabsData.push({
         name: 'Moves',
         component: <Moves />,
-        url: 'moves'
-      },
-    ]
-  }, []);
+        url: 'moves',
+        icon: <MovesIcon />
+      })
+    }
+
+    return tabsData
+  }, [isMobile]);
 
   useEffect(() => {
     if (!id) return
@@ -51,22 +74,53 @@ function Pokemon() {
 
 
 
-
   const renderTabButtons = () => {
-    return tabs.map((tab, index) =>
-      <button
-        key={tab.name}
-        onClick={() => {
-          setTab(index)
-          navigate(`/pokemon/${id}/${tab.url}`, { replace: true })
-        }}
-        className={`text-card hover:bg-primary-card/10 py-3 transition-colors cursor-pointer size-full grid place-content-center bg-primary ${currentTab === index && 'bg-primary-card'}`}>{tab.name}</button>)
-  }
+    return tabs.map((tab, index) => {
+      const isActive = currentTab === index;
+
+      return (
+        <button
+          key={tab.name}
+          onClick={() => {
+            setDrawerOpen(true);
+            setTab(index);
+            navigate(`/pokemon/${id}/${tab.url}`, { replace: true });
+          }}
+          className={`
+            flex-1
+            py-4
+            flex items-center justify-center flex-col gap-2
+            h-full
+            text-sm font-medium
+            relative
+            transition-colors
+            
+          ${isMobile
+              ? (`${isActive
+                ? 'text-card font-semibold relative'
+                : 'text-muted hover:text-card relative'}`)
+              : (isActive
+                ? "bg-primary-card text-card shadow-inner rounded-tl-md rounded-tr-md"
+                : "text-muted hover:text-card")
+            }`
+          }
+
+        >
+          {tab.icon}
+
+          {/* underline indicator */}
+          {isActive && (
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2/3 h-0.5 rounded-full bg-card-border" />
+          )}
+        </button>
+      );
+    });
+  };
+
 
   if (isMobile) {
     return (
-      <div className="relative flex flex-col min-h-screen">
-        {/* Background type icon (stays in the center always) */}
+      <div className="relative flex-1 flex flex-col h-full justify-center items-center">
         {currentPokemon?.types?.length > 0 && (
           <PokemonType
             type={currentPokemon.types[0]}
@@ -74,21 +128,26 @@ function Pokemon() {
               fixed 
               top-1/2 left-1/2 
               -translate-x-1/2 -translate-y-1/2 
-              opacity-20 
+              opacity-30 
               scale-125 
               pointer-events-none 
               h-80 w-80
             "
           />
         )}
-
-        {/* Foreground content */}
-        <div className="relative z-10 flex-1 w-full">
-          {tabs[currentTab]?.component}
+        <div className="flex flex-col items-center">
+          {!loading.pokemon ? <div className="text-card uppercase text-3xl font-semibold">
+            {currentPokemon.name}
+          </div> : <Skeleton className='h-9 w-60' />}
+          <ImageBox currentPokemon={currentPokemon} isLoading={!loading.pokemon} />
         </div>
+        {/* Foreground content */}
+        <CustomDrawer open={drawerOpen} onOpenChange={setDrawerOpen} title={tabs[currentTab]?.name}>
+          {tabs[currentTab]?.component}
+        </CustomDrawer>
 
         {/* Bottom nav */}
-        <div className="w-full fixed bottom-0 flex h-12 bg-primary-card z-20">
+        <div className="w-full fixed bottom-0 flex h-14 z-20 bg-primary-card drop-shadow-xl rounded-tl-3xl rounded-tr-3xl overflow-x-hidden">
           {renderTabButtons()}
         </div>
       </div>
@@ -96,7 +155,7 @@ function Pokemon() {
   }
 
   return (
-    <div className="md:h-[calc(100vh_-_80px)] mt-2 w-[95%] card-clip mx-auto p-[2px] bg-card-border">
+    <div className="hidden lg:block md:h-[calc(100vh_-_80px)] mt-2 w-[95%] card-clip mx-auto p-[2px] bg-card-border">
       <div className="bg-primary card-clip size-full flex flex-col justify-evenly items-center">
         {currentPokemon?.types?.length > 0 && (
           <PokemonType
@@ -112,10 +171,9 @@ function Pokemon() {
         <div className="size-full mt-[6.25rem] overflow-y-auto relative z-10">
           {tabs[currentTab]?.component}
         </div>
-        <div className="justify-end w-full">
-          <div className="w-full h-14 bg-primary-card flex justify-evenly items-center">
-            {renderTabButtons()}
-          </div>
+
+        <div className="w-full flex justify-evenly items-center">
+          {renderTabButtons()}
         </div>
       </div>
     </div>)

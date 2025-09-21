@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import CustomCard from "../../../components/CustomCard";
+import { Skeleton } from "../../../components/ui/skeleton";
 
 function Moves() {
   const { currentPokemon, loading } = useSelector((state) => state.pokemon);
@@ -31,12 +32,7 @@ function Moves() {
           : Array.from({ length: 60 }).map((_, index) => {
             const widths = ["w-16", "w-20", "w-24", "w-28", "w-32", "w-36"];
             const randomWidth = widths[Math.floor(Math.random() * widths.length)];
-            return (
-              <div
-                key={index}
-                className={`h-[3.75rem] ${randomWidth} bg-gray-800 rounded-sm animate-pulse`}
-              />
-            );
+            return (<Skeleton key={index} className={`h-[3.75rem] ${randomWidth} rounded-2xl bg-gray-800`} />);
           })}
 
       </div>

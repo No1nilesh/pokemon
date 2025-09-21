@@ -31,7 +31,7 @@ function SearchBar() {
       type="text"
       placeholder="Search Pokémon"
       onChange={(e) => handleSearch(e.target.value)}
-      className="bg-gray-100/20 px-4 py-2 outline-none w-[280px] text-white rounded-md border-2 transition-colors duration-100 border-transparent focus:border-[#596A95]"
+      className="bg-gray-100/20 px-4 py-2 outline-none w-full text-white rounded-md border-2 transition-colors duration-100 border-transparent focus:border-[#596A95]"
     />
   );
 }

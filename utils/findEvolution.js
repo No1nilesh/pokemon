@@ -1,5 +1,6 @@
 
 export const findEvolution = (evolution, name) => {
+  if (!Array.isArray(evolution)) return -1;
   for (const form of evolution) {
     const index = form.indexOf(name);
     if (index >= 0) return index + 1;

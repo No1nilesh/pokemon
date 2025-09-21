@@ -87,8 +87,11 @@ export const PokemonSlice = createSlice({
         })
 
         builder.addCase(getEvolutionData.fulfilled, (state, action) => {
-            state.currentEvolutionData = action.payload
-            state.fetchedEvolutionForId = state.currentPokemon.id;
+            const { data, updateList } = action.payload
+            state.currentEvolutionData = data
+            if (updateList) {
+                state.fetchedEvolutionForId = state.currentPokemon.id;
+            }
             state.loading.evolution = false
         })
 

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import SearchBar from "./SearchBar.jsx";
 import { ChevronLeft, Menu, X } from "lucide-react";
 import IsMobile from "../hooks/IsMobile.jsx";
@@ -6,33 +6,31 @@ import PokeBall from "../assets/pokeball.svg";
 import { useLocation, useNavigate } from "react-router-dom";
 import { resetCurrentPokemon, resetEvolution } from "../app/slice/pokemonSlice.js";
 import { useDispatch } from "react-redux";
+import { Button } from "./ui/button.jsx";
+import CustomTooltip from "./CustomTooltip.jsx";
+
 function Header() {
   const isMobile = IsMobile();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef(null);
-  const location = useLocation()
-  const isHomePage = location.pathname === '/'; // Check if the user is on the home page  
+  const location = useLocation();
+  const dispatch = useDispatch();
 
-  const handleClick = () => {
-    setIsMenuOpen((prev) => !prev);
-    if (menuRef.current) {
-      const height = isMenuOpen ? "0px" : `${menuRef.current.scrollHeight}px`;
-      menuRef.current.style.maxHeight = height;
-    }
+  const isHomePage = location.pathname === "/"; // check if homepage
+
+  const hBack = () => {
+    navigate(-1);
+    dispatch(resetCurrentPokemon());
+    dispatch(resetEvolution());
   };
 
-  const dispatch = useDispatch()
-  const hBack = () => {
-    navigate(-1)
-    dispatch(resetCurrentPokemon())
-    dispatch(resetEvolution())
-  }
+  const showSearchBar = isHomePage && !isMobile;
+  const showMobileSearch = isHomePage && isMobile;
 
   return (
-    <div className="header p-[1px] sticky top-0 z-50 rounded-md ">
-      <header className="flex gap-2 flex-col bg-primary rounded-md ">
-        <nav className="flex justify-center items-center z-50 relative">
+    <div className="header p-[1px] w-full sticky top-0 z-50 rounded-md">
+      <header className="flex flex-col backdrop-blur-md bg-primary/90 rounded-md shadow-md relative">
+        <nav className="flex justify-center items-center relative">
           <img
             src={PokeBall}
             alt="pokeball"
@@ -40,38 +38,52 @@ function Header() {
             height={40}
             className="drop-shadow-md mx-1"
           />
-          <h1 className="text-4xl text-gray-100 font-bold py-3"> Pokémon</h1>
+          <h1 className="text-4xl text-gray-100 font-bold py-3">Pokémon</h1>
 
-          {/* SearchBar only visible on homepage */}
-          {isHomePage && !isMobile && (
+          {/* SearchBar (desktop only, homepage) */}
+          {showSearchBar && (
             <div className="absolute right-8">
               <SearchBar />
             </div>
           )}
 
-          {/* Mobile menu toggle */}
+          {/* Mobile menu toggle (homepage only) */}
+          {isHomePage && (
+            <button
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              aria-expanded={isMenuOpen}
+              className="absolute right-4 text-card lg:hidden hover:scale-110 transition-transform"
+            >
+              {isMenuOpen ? <X /> : <Menu />}
+            </button>
+          )}
 
-          {isHomePage && <div onClick={handleClick} className="text-white absolute right-4 cursor-pointer md:hidden">
-            {!isMenuOpen ? <Menu /> : <X />}
-          </div>}
-          {!isHomePage && <button
-            onClick={hBack}
-            className="bg-primary-card rounded-sm drop-shadow-md text-card flex pr-4 py-1 absolute right-5 cursor-pointer">
-            <ChevronLeft size={24} /> Back
-          </button>}
+          {/* Back button (non-home pages) */}
+          {!isHomePage && (
+            <CustomTooltip message="Back">
+              <Button
+                variant="ghost"
+                onClick={hBack}
+                className="absolute left-3 lg:left-6 bg-primary-card/80 hover:bg-primary-card rounded-md transition-transform h-4"
+              >
+                <ChevronLeft className="text-card w-6 h-6" />
+              </Button>
+            </CustomTooltip>
+          )}
         </nav>
 
-        {/* Mobile SearchBar only on homepage */}
-        {isMobile && isHomePage && (
-          <ul
-            ref={menuRef}
-            className={`overflow-hidden bg-inherit text-white transition-all duration-300 ease-in-out z-40 ${isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        {/* Mobile SearchBar dropdown */}
+        {showMobileSearch && (
+          <div
+            className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out rounded-b-md shadow-md ${isMenuOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
               }`}
           >
-            <li className="bg-inherit w-full py-2">
-              <SearchBar />
-            </li>
-          </ul>
+            <ul className="bg-inherit/90 text-white">
+              <li className="w-full p-2">
+                <SearchBar />
+              </li>
+            </ul>
+          </div>
         )}
 
       </header>

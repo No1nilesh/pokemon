@@ -11,7 +11,7 @@ import ErrorBoundary from "./components/ErrorBoundary.jsx";
 function RootLayout() {
   return (
     <ErrorBoundary>
-      <div className="text-center font-exo">
+      <div className="text-center font-exo min-h-lvh flex flex-col">
         <Header />
         <Outlet />
       </div>
