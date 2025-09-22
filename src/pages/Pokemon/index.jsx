@@ -12,6 +12,7 @@ import ImageBox from "./components/image-box.jsx";
 import { DescriptionIcon, EvolutionIcon, MovesIcon } from "../../assets/Icons.jsx";
 import StatsTab from "./tabs/StatsTab.jsx";
 import { Skeleton } from "../../components/ui/skeleton.jsx";
+import { AnimatePresence, motion } from "framer-motion";
 
 function Pokemon() {
   const { id, tab } = useParams();
@@ -136,10 +137,22 @@ function Pokemon() {
           />
         )}
         <div className="flex flex-col items-center">
-          {!loading.pokemon ? <div className="text-card uppercase text-3xl font-semibold">
+          {!loading.pokemon ? <motion.div
+            key={currentPokemon.name}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="text-card uppercase text-3xl font-semibold"
+          >
             {currentPokemon.name}
-          </div> : <Skeleton className='h-9 w-60' />}
-          <ImageBox currentPokemon={currentPokemon} isLoading={!loading.pokemon} />
+          </motion.div> : <Skeleton className='h-9 w-60' />}
+          <motion.div
+            animate={{ y: [0, -10, 0] }}
+            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+            className="flex flex-col items-center"
+          >
+            <ImageBox currentPokemon={currentPokemon} isLoading={!loading.pokemon} />
+          </motion.div>
         </div>
         {/* Foreground content */}
         <CustomDrawer open={drawerOpen} onOpenChange={setDrawerOpen} title={tabs[currentTab]?.name}>
@@ -167,11 +180,21 @@ function Pokemon() {
             pointer-events-none
           "
           />
+          
         )}
-        <div className="size-full mt-[6.25rem] overflow-y-auto relative z-10">
-          {tabs[currentTab]?.component}
-        </div>
 
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="size-full mt-[6.25rem] overflow-y-auto relative z-10"
+          >
+            {tabs[currentTab]?.component}
+          </motion.div>
+        </AnimatePresence>
         <div className="w-full flex justify-evenly items-center">
           {renderTabButtons()}
         </div>

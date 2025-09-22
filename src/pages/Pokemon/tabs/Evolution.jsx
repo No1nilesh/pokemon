@@ -33,12 +33,12 @@ function Evolution({ handleDrawer }) {
       </div>
 
 
-      <Carousel setApi={setApi} onInit={(api) => setApi(api)} className="w-full max-w-2xl lg:max-w-7xl relative">
-        <CarouselContent className={`-ml-4 px-6 gap-2 ${evolutionPokemon?.length <= 3 && !isMobile ? "justify-center" : ""}`}>
+      <Carousel setApi={setApi} className="w-full max-w-2xl lg:max-w-7xl relative">
+        <CarouselContent className={`-ml-4 px-6 gap-2`}>
           {(loading.list || loading.evolution) ?
             Array.from({ length: 3 }).map((_, index) => (
               <CarouselItem key={index} className="pl-1 basis-full xl:basis-1/3">
-                <Skeleton className="w-full h-[20rem] md:h-[28.65rem] rounded-2xl bg-gray-800" />
+                <Skeleton className="w-full h-[25rem] lg:h-[28.65rem] rounded-2xl" />
               </CarouselItem>
             ))
             : evolutionPokemon?.map((pokemon) => (
@@ -51,7 +51,7 @@ function Evolution({ handleDrawer }) {
                 className="pl-1 basis-full lg:basis-1/3"
                 key={pokemon.id}
               >
-                <CustomCard className="relative ">
+                <CustomCard className="relative cursor-pointer">
                   <div className="text-card uppercase text-xl font-semibold w-full flex items-center justify-between">
                     <span>{pokemon.name}</span>
                     <AudioPlayer sound={pokemon.sound} />

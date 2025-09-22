@@ -44,7 +44,7 @@ export default {
 
 			textColor: {
 				'card': 'hsl(207,90%,72%)',          // light blue text
-				'primary': 'hsl(210, 20%, 95%)',     // almost white
+				'primary': 'hsl(207,90%,72%)',     // almost white
 				'muted': 'hsl(219, 14%, 65%)',       // grayish text for secondary info
 				'accent': 'hsl(330, 85%, 65%)',      // pink text highlight
 				'accent-2': 'hsl(48, 100%, 60%)',    // yellow text highlight
